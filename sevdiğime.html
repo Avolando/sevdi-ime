@@ -1,1 +1,112 @@
-# sevdi-ime
+# sevdi-ime<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Arda'dan Sana</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #1e1e1e, #2a2a2a);
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      height: 100vh;
+      padding: 40px 20px;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .show {
+      display: flex;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #ff4b5c;
+    }
+
+    p {
+      font-size: 20px;
+      line-height: 1.6;
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #ff4b5c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #e63d4f;
+    }
+
+    .heart {
+      font-size: 40px;
+      margin-bottom: 20px;
+      animation: pulse 1.5s infinite;
+      color: red;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. EKRAN -->
+  <div id="screen1" class="screen show">
+    <div class="heart">❤️</div>
+    <h1>Minik bir mektup var sana...</h1>
+    <p>Merhaba... Bu sadece bir site değil, sana söyleyemediklerimi anlatmak istediğim bir alan.  
+    Kalbimle yazdım her kelimeyi. Devam etmek istersen, sadece bir dokunuş yeter.</p>
+    <button onclick="showScreen(2)">BAS</button>
+  </div>
+
+  <!-- 2. EKRAN -->
+  <div id="screen2" class="screen">
+    <h1>🕊️ Bir sır saklı burada...</h1>
+    <p>Buraya bir daha <strong>basarsan</strong>, Arda’nın sana yazdığı gizli yazıyı görebilirsin.</p>
+    <button onclick="showScreen(3)">Tekrar Bas</button>
+  </div>
+
+  <!-- 3. EKRAN -->
+  <div id="screen3" class="screen">
+    <div class="heart">💌</div>
+    <h1>Gizli Mektup: Sadece Sen Oku...</h1>
+    <p>
+      Belki aramızda bazı kırgınlıklar oldu. Ama bilmeni istiyorum ki, bu kalp hâlâ seninle çarpıyor.
+      Seni düşündüğüm her an içimde bir umut filizleniyor.  
+      Eğer bana tekrar bir şans verirsen, sadece seni güldürmeye, seni mutlu etmeye ve yanında dimdik durmaya söz veriyorum.  
+      Geçmişin gölgesine değil, geleceğin ışığına bakalım istiyorum.  
+      Çünkü sen varsın diye her şey güzeldi… sensiz hiçbir şeyin anlamı yok.  
+    </p>
+    <p><strong>– Arda</strong></p>
+  </div>
+
+  <script>
+    function showScreen(screenNumber) {
+      document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("show"));
+      document.getElementById("screen" + screenNumber).classList.add("show");
+    }
+  </script>
+
+</body>
+</html>
