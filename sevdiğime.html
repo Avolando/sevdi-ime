@@ -1,112 +1,429 @@
-# sevdi-ime<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>Arda'dan Sana</title>
+  <title>Sümeyye'ye Not</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #1e1e1e, #2a2a2a);
+      background-color: black;
       color: white;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    .screen {
-      display: none;
+      font-family: Arial, sans-serif;
       height: 100vh;
-      padding: 40px 20px;
-      box-sizing: border-box;
+      overflow: hidden;
+      display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      position: relative;
+      padding: 20px;
     }
 
-    .show {
+    .balloon-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .balloon {
+      position: absolute;
+      bottom: -150px;
+      width: 40px;
+      height: 60px;
+      background: pink;
+      border-radius: 50%;
+      box-shadow: inset -5px -5px 10px rgba(255,192,203,0.7);
+      animation: floatUp linear infinite;
+      filter: drop-shadow(0 1px 1px rgba(255 255 255 / 0.4));
+    }
+
+    .balloon::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      width: 2px;
+      height: 30px;
+      background: white;
+      transform: translateX(-50%);
+      border-radius: 1px;
+    }
+
+    @keyframes floatUp {
+      0% {transform: translateY(0);opacity: 1;}
+      100% {transform: translateY(-110vh);opacity: 0;}
+    }
+
+    .balloon:nth-child(1) {left: 10%; animation-duration: 15s;}
+    .balloon:nth-child(2) {left: 25%; animation-duration: 18s;}
+    .balloon:nth-child(3) {left: 40%; animation-duration: 14s;}
+    .balloon:nth-child(4) {left: 60%; animation-duration: 20s;}
+    .balloon:nth-child(5) {left: 75%; animation-duration: 17s;}
+    .balloon:nth-child(6) {left: 85%; animation-duration: 16s;}
+
+    #container {
+      position: relative;
+      width: 320px;
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
     }
 
-    h1 {
-      font-size: 32px;
-      color: #ff4b5c;
+    .text {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    p {
-      font-size: 20px;
-      line-height: 1.6;
-      max-width: 600px;
-      margin-bottom: 30px;
+    .click-text {
+      font-size: 14px;
+      color: #aaa;
+      margin-top: 5px;
     }
 
-    button {
-      padding: 15px 30px;
-      font-size: 18px;
-      background-color: #ff4b5c;
+    .envelope-wrapper {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      perspective: 800px;
+    }
+
+    .envelope-wrapper:hover {
+      transform: scale(1.03);
+    }
+
+    .envelope {
+      width: 100%;
+      height: 100%;
+      background-color: red;
+      border-radius: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .flap {
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 100px solid white;
+      z-index: 2;
+      transform-origin: top center;
+      transition: transform 0.6s ease;
+      cursor: pointer;
+    }
+
+    .flap.open {
+      transform: rotateX(180deg);
+    }
+
+    .password-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 260px;
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 20;
       color: white;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    .password-container input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      outline: none;
+      margin-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .password-container .note {
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    .password-container button {
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      background-color: #333;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .next-page, .question-page, .final-page {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 40px;
+      box-sizing: border-box;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      font-family: 'Georgia', serif;
+    }
+
+    .next-page {
+      background-color: pink;
+      color: #222;
+      z-index: 30;
+      justify-content: flex-start;
+    }
+
+    .question-page {
+      background-color: #111;
+      color: white;
+      z-index: 40;
+      justify-content: center;
+    }
+
+    .final-page {
+      background-color: #222;
+      color: white;
+      z-index: 50;
+      justify-content: center;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .note-text {
+      white-space: pre-wrap;
+      font-size: 18px;
+      line-height: 1.8;
+      max-width: 700px;
+      background-color: rgba(255,255,255,0.7);
+      padding: 20px;
+      border-radius: 10px;
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .reply-button {
+      display: inline-block;
+      background-color: #ff4d6d;
+      color: white;
+      font-weight: bold;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+      margin-bottom: 40px;
+    }
+
+    .board {
+      background-color: #222;
+      color: white;
+      width: 300px;
+      height: 300px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .board p {
+      font-size: 18px;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+
+    .board button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      font-weight: bold;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
+      user-select: none;
+      position: relative;
     }
 
-    button:hover {
-      background-color: #e63d4f;
+    .yes-btn {
+      background-color: #28a745;
+      color: white;
     }
 
-    .heart {
-      font-size: 40px;
-      margin-bottom: 20px;
-      animation: pulse 1.5s infinite;
-      color: red;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
+    .no-btn {
+      background-color: #dc3545;
+      color: white;
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. EKRAN -->
-  <div id="screen1" class="screen show">
-    <div class="heart">❤️</div>
-    <h1>Minik bir mektup var sana...</h1>
-    <p>Merhaba... Bu sadece bir site değil, sana söyleyemediklerimi anlatmak istediğim bir alan.  
-    Kalbimle yazdım her kelimeyi. Devam etmek istersen, sadece bir dokunuş yeter.</p>
-    <button onclick="showScreen(2)">BAS</button>
+  <div class="balloon-container" aria-hidden="true">
+    <div class="balloon"></div><div class="balloon"></div><div class="balloon"></div>
+    <div class="balloon"></div><div class="balloon"></div><div class="balloon"></div>
   </div>
 
-  <!-- 2. EKRAN -->
-  <div id="screen2" class="screen">
-    <h1>🕊️ Bir sır saklı burada...</h1>
-    <p>Buraya bir daha <strong>basarsan</strong>, Arda’nın sana yazdığı gizli yazıyı görebilirsin.</p>
-    <button onclick="showScreen(3)">Tekrar Bas</button>
+  <div id="container">
+    <div class="text">
+      <h2>Sana bir not var</h2>
+      <div class="click-text">Açmak için tıkla</div>
+    </div>
+
+    <div class="envelope-wrapper">
+      <div class="flap" id="flap"></div>
+      <div class="envelope"></div>
+
+      <div class="password-container" id="password-container">
+        <input type="password" id="password-input" placeholder="Şifreyi gir" autocomplete="off" />
+        <div class="note">(Tanışma Günümüz)</div>
+        <button id="submit-btn">Gönder</button>
+      </div>
+    </div>
   </div>
 
-  <!-- 3. EKRAN -->
-  <div id="screen3" class="screen">
-    <div class="heart">💌</div>
-    <h1>Gizli Mektup: Sadece Sen Oku...</h1>
-    <p>
-      Belki aramızda bazı kırgınlıklar oldu. Ama bilmeni istiyorum ki, bu kalp hâlâ seninle çarpıyor.
-      Seni düşündüğüm her an içimde bir umut filizleniyor.  
-      Eğer bana tekrar bir şans verirsen, sadece seni güldürmeye, seni mutlu etmeye ve yanında dimdik durmaya söz veriyorum.  
-      Geçmişin gölgesine değil, geleceğin ışığına bakalım istiyorum.  
-      Çünkü sen varsın diye her şey güzeldi… sensiz hiçbir şeyin anlamı yok.  
-    </p>
-    <p><strong>– Arda</strong></p>
+  <div class="next-page" id="next-page">
+    <h2>Sevgili Sümeyye</h2>
+    <div class="note-text">
+Sümeyye sana bu site yapma kararı almamın sebebi şu: kaç gündür düşünüyorum ve aklımdan çıkmadın. Ben de gittim istihare namazı kıldım. İlk gün görmedim, 2. gün görmedim, 3. gün görmedim ama 4. gün gördüm — hem de çok güzel bir şekilde.
+
+Ne kadar sen de ben de inat etsek de, eninde sonunda biz birbirimizi bulacağız bence. Bunu namaz kılarak kendime de kanıtladım. Valla ister inan ister inanma, ben bile şaşkınım.
+
+Sana klasik bir mesaj yazmak istemedim. O kadar yazılım dersi aldım, bari bir işe yarasın dedim ve sana küçük bir site yapayım dedim. Aslında bunu birinci yılımıza özel daha da güzel yapacaktım ama nasip bugüneymiş. O zamanı da görürsek, hayırlısıyla yine yaparım.
+
+Evet, ayrıldık. Ama biz hep ayrılıyoruz zaten. Bunu sen de biliyorsun. Bu sefer farklı bir şekilde de olsa, bu bir şey değiştirmez. Biliyorum sen de hâlâ bana karşı bir şeyler hissediyorsun.
+
+Son olay çok boktandı, yapmamam gerekiyordu ama yaptım. Hatırlamıyorum bile. Özür dilerim.
+
+İkimizin de hataları oldu, bunu da ikimiz de biliyoruz. Ve her zaman birbirimizi affettik. Bu sefer de affetmeliyiz bence. Çünkü biz ikimiz, birlikte hayaller kurduk ve bunları başka biriyle yaşayamayız.
+
+Son yazdığından sonra beni engellemedin. Ben "kesin engeller" diye bekledim. Ama engellemediğin için, belki bir umut vardır diye böyle bir şey yaptım. Hatta gittim senin için 4 gün üst üste namaz kıldım.
+
+Yazarsam tersler misin terslemez misin bilemedim o yüzden bu şekilde yazdım. Ve evet bu yazıyı yazmak, bu siteyi yapmak işim dolayısıyla uzun sürdü ama geceleri uyumayıp yaptım.
+
+Bazı yerleri eksik belki ama olsun, gel oraları da birlikte dolduralım.
+
+Bu yazıyı okuduysan aşağıdaki butona bas ve cevabını orada ver. :)
+    </div>
+    <button class="reply-button" id="go-question">Cevap Ver</button>
+  </div>
+
+  <div class="question-page" id="question-page">
+    <div class="board" id="board">
+      <p id="board-text">Tekrardan barışıp bir daha denemeye ne dersin?</p>
+      <button class="yes-btn" id="yes-btn">Evet</button>
+      <button class="no-btn" id="no-btn">Hayır</button>
+    </div>
+  </div>
+
+  <div class="final-page" id="final-page">
+    <p>Tamam şimdi bana WP'den yaz güzelim :))))</p>
   </div>
 
   <script>
-    function showScreen(screenNumber) {
-      document.querySelectorAll(".screen").forEach(screen => screen.classList.remove("show"));
-      document.getElementById("screen" + screenNumber).classList.add("show");
-    }
-  </script>
+    const flap = document.getElementById('flap');
+    const passwordContainer = document.getElementById('password-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const passwordInput = document.getElementById('password-input');
+    const envelopeWrapper = document.querySelector('.envelope-wrapper');
+    const textArea = document.querySelector('.text');
+    const nextPage = document.getElementById('next-page');
+    const questionPage = document.getElementById('question-page');
+    const finalPage = document.getElementById('final-page');
+    const goQuestionBtn = document.getElementById('go-question');
+    const noBtn = document.getElementById('no-btn');
+    const yesBtn = document.getElementById('yes-btn');
+    const board = document.getElementById('board');
+    const boardText = document.getElementById('board-text');
 
+    let isOpen = false;
+    let noClickCount = 0;
+
+    flap.addEventListener('click', () => {
+      if (isOpen) return;
+      flap.classList.add('open');
+      isOpen = true;
+      setTimeout(() => {
+        passwordContainer.style.display = 'flex';
+        passwordInput.focus();
+      }, 600);
+    });
+
+    submitBtn.addEventListener('click', () => {
+      const enteredPassword = passwordInput.value.trim();
+      const correctPassword = '071024';
+
+      if (enteredPassword === correctPassword) {
+        passwordContainer.style.display = 'none';
+        envelopeWrapper.style.display = 'none';
+        textArea.style.display = 'none';
+        nextPage.style.display = 'flex';
+      } else {
+        alert('Yanlış şifre, tekrar dene!');
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    });
+
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitBtn.click();
+    });
+
+    goQuestionBtn.addEventListener('click', () => {
+      nextPage.style.display = 'none';
+      questionPage.style.display = 'flex';
+    });
+
+    noBtn.addEventListener('click', () => {
+      noClickCount++;
+      if (noClickCount >= 3) {
+        noBtn.style.display = 'none';
+        boardText.textContent = 'Evet demek zorundasın :)';
+        noBtn.style.position = '';
+        noBtn.style.left = '';
+        noBtn.style.top = '';
+      } else {
+        const maxX = board.clientWidth - noBtn.offsetWidth;
+        const maxY = board.clientHeight - noBtn.offsetHeight;
+
+        const randomX = Math.floor(Math.random() * maxX);
+        const randomY = Math.floor(Math.random() * maxY);
+
+        noBtn.style.position = 'absolute';
+        noBtn.style.left = randomX + 'px';
+        noBtn.style.top = randomY + 'px';
+      }
+    });
+
+    yesBtn.addEventListener('click', () => {
+      questionPage.style.display = 'none';
+      finalPage.style.display = 'flex';
+    });
+  </script>
 </body>
 </html>
