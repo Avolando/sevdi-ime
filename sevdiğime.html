@@ -202,12 +202,12 @@
     }
 
     .final-page {
-      background-color: #222;
-      color: white;
+      background-color: white;
+      color: black;
       z-index: 50;
       justify-content: center;
       font-size: 24px;
-      text-align: center;
+      font-weight: bold;
     }
 
     .note-text {
@@ -256,7 +256,6 @@
     .board p {
       font-size: 18px;
       margin-bottom: 20px;
-      user-select: none;
     }
 
     .board button {
@@ -267,18 +266,19 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      user-select: none;
       position: relative;
     }
 
     .yes-btn {
       background-color: #28a745;
       color: white;
+      z-index: 10;
     }
 
     .no-btn {
       background-color: #dc3545;
       color: white;
+      z-index: 10;
     }
   </style>
 </head>
@@ -334,7 +334,7 @@ Bu yazıyı okuduysan aşağıdaki butona bas ve cevabını orada ver. :)
   </div>
 
   <div class="question-page" id="question-page">
-    <div class="board" id="board">
+    <div class="board">
       <p id="board-text">Tekrardan barışıp bir daha denemeye ne dersin?</p>
       <button class="yes-btn" id="yes-btn">Evet</button>
       <button class="no-btn" id="no-btn">Hayır</button>
@@ -342,7 +342,7 @@ Bu yazıyı okuduysan aşağıdaki butona bas ve cevabını orada ver. :)
   </div>
 
   <div class="final-page" id="final-page">
-    <p>Tamam şimdi bana WP'den yaz güzelim :))))</p>
+    Tamam şimdi bana wp'den yaz yaz.
   </div>
 
   <script>
@@ -356,10 +356,11 @@ Bu yazıyı okuduysan aşağıdaki butona bas ve cevabını orada ver. :)
     const questionPage = document.getElementById('question-page');
     const finalPage = document.getElementById('final-page');
     const goQuestionBtn = document.getElementById('go-question');
-    const noBtn = document.getElementById('no-btn');
+
     const yesBtn = document.getElementById('yes-btn');
-    const board = document.getElementById('board');
+    const noBtn = document.getElementById('no-btn');
     const boardText = document.getElementById('board-text');
+    const board = document.querySelector('.board');
 
     let isOpen = false;
     let noClickCount = 0;
@@ -400,6 +401,7 @@ Bu yazıyı okuduysan aşağıdaki butona bas ve cevabını orada ver. :)
     });
 
     noBtn.addEventListener('click', () => {
+      console.log('Hayır butonuna basıldı');
       noClickCount++;
       if (noClickCount >= 3) {
         noBtn.style.display = 'none';
@@ -421,6 +423,7 @@ Bu yazıyı okuduysan aşağıdaki butona bas ve cevabını orada ver. :)
     });
 
     yesBtn.addEventListener('click', () => {
+      console.log('Evet butonuna basıldı');
       questionPage.style.display = 'none';
       finalPage.style.display = 'flex';
     });
